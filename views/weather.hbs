@@ -1,0 +1,145 @@
+{{!-- <!DOCTYPE html> --}}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    {{>link}}
+  <style>
+    {{>css}}
+  </style>
+</head>
+<body>
+  {{>header}}
+
+    <!-- main header -->
+    <div class="container-fluid main_header">
+
+        <div class="row">
+            <div class="col-md-10 col-12 mx-auto">
+               
+                <div class="main_content">
+                    <form  class="temp_form">
+                        <input type="text" autocomplete="off" id="cityname" placeholder="Enter your city" class="cityname">
+                         <input type="submit" value="search" id="submitbtn">
+                    </form>
+                </div>
+
+                <div class="tempInformation">
+                    <div class="top_layer">
+                        <p id="day">Tuesday</p>
+                        <p id="today_date">13 Oct</p>
+
+                    </div>
+
+                    <div class="main_layer ">
+                        <p id="city_name">Get Output here:-</p>
+                        <div class="middle_layer ">
+
+                            <p id="temp"></p>
+                            <p id="temp_status"></p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- footer -->
+
+{{>footer}}
+</body>
+
+<script>
+const day=document.getElementById("day");
+const date=document.getElementById("today_date");
+
+
+
+function current_day(){
+    let arr=['Mon','Tue','Wed','Thur','Fri','Sat','Sun'];
+    let all=new Date();
+    let din=arr[all.getDay()]
+
+    day.innerHTML=din;
+
+    
+}
+
+function current_date(){
+    let arr_date=['Jan','Feb','Mar','Apr','May','June','July','Aug','Sept','Oct','Nov','Dec'];
+    let all=new Date();
+    let today_month=arr_date[all.getMonth()];
+    let today_dinak=all.getDate();
+    date.innerHTML=`${today_dinak} ${today_month}`
+
+}
+current_day();
+current_date();
+let submitbtn=document.getElementById("submitbtn")
+submitbtn.addEventListener("click",async(e)=>{
+e.preventDefault()
+let city_name_O=document.getElementById("city_name")
+let  temp_val=document.getElementById("temp")
+let temp_status=document.getElementById("temp_status")
+let cityname_I=document.getElementById("cityname").value;
+if(cityname_I===""){
+    city_name_O.innerHTML="please Enter something"
+}
+else{
+try{
+console.log('fetcher')
+let url=`https://api.openweathermap.org/data/2.5/weather?q=${cityname_I}&units=metric&appid=d8852330e99405cd021278711e80d328`
+    let data=await fetch(url);
+
+    let data_json=await data.json();
+if(data_json.cod==="404"){
+            city_name_O.innerHTML=`Wrong city`
+
+}
+    
+        let getting=[data_json];
+        console.log(getting)
+        console.log(getting[0].weather[0].main,getting[0].name,getting[0].sys.country,getting[0].main.temp)
+        city_name_O.innerHTML=`${getting[0].name} , ${getting[0].sys.country}`
+        temp_val.innerHTML=`<span>${getting[0].main.temp}</span><sup>o</sup>C`;
+if(getting[0].weather[0].main==="Haze"){
+    temp_status.innerHTML=`<i class="fas fa-sun-haze" id="emoji"></i>
+`
+}
+else if(getting[0].weather[0].main==="Drizzle"){
+        temp_status.innerHTML=` <i class="fas fa-cloud-drizzle " id="emoji"></i>
+`
+
+}
+else if(getting[0].weather[0].main==="Rain"){
+        temp_status.innerHTML=`<i class="fas fa-cloud-rain" id="emoji"></i>
+`
+
+}
+else if(getting[0].weather[0].main==="Clouds"){
+        temp_status.innerHTML=`<i class="fa fa-cloud"  id="emoji"aria-hidden="true"></i>`
+
+}
+else{
+        temp_status.innerHTML=`<i class="fad fa-sun"  id="emoji"></i>`
+
+}
+console.log(city_name_O,cityname_I,temp_val,temp_status,submitbtn)
+
+}
+
+
+catch(err){
+    console.log('error')
+        city_name_O.innerHTML=`Server Error Please try Again!`
+
+}
+}
+})
+</script>
+
+ 
+</html>
